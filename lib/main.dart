@@ -93,11 +93,16 @@ class HorizontalList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5),
         itemBuilder: (context, index) {
           if (index == _itemsCount) {
-            return const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MoreBtn(),
-              ],
+            return AutoScrollTag(
+              key: ValueKey(index),
+              controller: controller,
+              index: index,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MoreBtn(),
+                ],
+              ),
             );
           } else {
             return AutoScrollTag(
@@ -127,6 +132,18 @@ class _ChildState extends State<Child> {
   final FocusNode focusNode = FocusNode();
 
   @override
+  void initState() {
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        debugPrint("Index of item with focus is: ${widget.index} ");
+        widget.controller.scrollToIndex(widget.index,
+            preferPosition: AutoScrollPosition.begin);
+      }
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     focusNode.dispose();
     super.dispose();
@@ -134,13 +151,6 @@ class _ChildState extends State<Child> {
 
   @override
   Widget build(BuildContext context) {
-    focusNode.addListener(() {
-      if (focusNode.hasFocus) {
-        debugPrint("Index of item with focus is: ${widget.index} ");
-        widget.controller.scrollToIndex(widget.index,
-            preferPosition: AutoScrollPosition.middle);
-      }
-    });
     return InkWell(
       onTap: () {},
       focusNode: focusNode,
